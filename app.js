@@ -2,6 +2,7 @@
   'use strict';
   const $ = id => document.getElementById(id);
   let result = null;
+  let resultQr = null;
   let stream = null;
   let cameraSession = 0;
   let imageSession = 0;
@@ -11,9 +12,54 @@
   const scanCanvas = document.createElement('canvas');
   const scanContext = scanCanvas.getContext('2d', { willReadFrequently: true });
   const status = (message, kind = '') => { $('status').textContent = message; $('status').className = `status ${kind}`; };
+  const nameSegmenter = typeof Intl.Segmenter === 'function' ? new Intl.Segmenter('zh-Hant', { granularity: 'grapheme' }) : null;
+
+  function renderResult() {
+    if (!result || !resultQr) return;
+    const name = $('personal-name').value.trim();
+    const count = resultQr.getModuleCount();
+    const size = 600;
+    const qrHeight = name ? 528 : size;
+    const scale = Math.floor(qrHeight / (count + 8));
+    const offsetX = Math.floor((size - count * scale) / 2);
+    const offsetY = Math.floor((qrHeight - count * scale) / 2);
+    const canvas = $('qr-canvas');
+    canvas.width = canvas.height = size;
+    const ctx = canvas.getContext('2d');
+    ctx.fillStyle = '#ffffff';
+    ctx.fillRect(0, 0, size, size);
+    ctx.fillStyle = '#000000';
+    for (let y = 0; y < count; y++) for (let x = 0; x < count; x++) {
+      if (resultQr.isDark(y, x)) ctx.fillRect(offsetX + x * scale, offsetY + y * scale, scale, scale);
+    }
+    if (name) {
+      let fontSize = 32;
+      const setFont = () => { ctx.font = `600 ${fontSize}px "Microsoft JhengHei", "PingFang TC", sans-serif`; };
+      setFont();
+      while (ctx.measureText(name).width > size - 72 && fontSize > 12) { fontSize--; setFont(); }
+      ctx.textAlign = 'center';
+      ctx.textBaseline = 'middle';
+      ctx.fillText(name, size / 2, 558, size - 72);
+    }
+    canvas.setAttribute('aria-label', name ? `精簡後的轉帳 QR Code，姓名：${name}` : '精簡後的轉帳 QR Code');
+    $('download').href = canvas.toDataURL('image/png');
+    $('download').download = `transfer-qr-${result.bank}-${result.account.slice(-4)}.png`;
+  }
+
+  function updateName(event) {
+    if (event.isComposing) return;
+    const input = $('personal-name');
+    const characters = nameSegmenter ? Array.from(nameSegmenter.segment(input.value), part => part.segment) : Array.from(input.value);
+    if (characters.length > 20) input.value = characters.slice(0, 20).join('');
+    $('name-count').textContent = `${Math.min(characters.length, 20)} / 20`;
+    renderResult();
+  }
 
   function clearResult() {
     result = null;
+    resultQr = null;
+    $('personal-name').value = '';
+    $('name-count').textContent = '0 / 20';
     $('empty-output').hidden = false;
     $('result').hidden = true;
     $('qr-canvas').getContext('2d').clearRect(0, 0, $('qr-canvas').width, $('qr-canvas').height);
@@ -31,23 +77,9 @@
       const qr = window.qrcode(0, 'M');
       qr.addData(next.text, 'Byte');
       qr.make();
-      const count = qr.getModuleCount();
-      const quiet = 4;
-      const size = 600;
-      const scale = Math.floor(size / (count + quiet * 2));
-      const offset = Math.floor((size - count * scale) / 2);
-      const canvas = $('qr-canvas');
-      canvas.width = canvas.height = size;
-      const ctx = canvas.getContext('2d');
-      ctx.fillStyle = '#ffffff';
-      ctx.fillRect(0, 0, canvas.width, canvas.height);
-      ctx.fillStyle = '#000000';
-      for (let y = 0; y < count; y++) for (let x = 0; x < count; x++) {
-        if (qr.isDark(y, x)) ctx.fillRect(offset + x * scale, offset + y * scale, scale, scale);
-      }
       result = next;
-      $('download').href = canvas.toDataURL('image/png');
-      $('download').download = `transfer-qr-${result.bank}-${result.account.slice(-4)}.png`;
+      resultQr = qr;
+      renderResult();
       $('bank-code').textContent = result.bank;
       $('account-number').textContent = result.account;
       $('result-text').value = result.text;
@@ -208,6 +240,8 @@
   window.addEventListener('pagehide', stopCamera);
   $('panel-text').addEventListener('submit', event => { event.preventDefault(); convert($('source-text').value); });
   $('source-text').addEventListener('input', () => { clearResult(); status('文字已更新，按「產生 QR Code」完成轉換。'); });
+  $('personal-name').addEventListener('input', updateName);
+  $('personal-name').addEventListener('compositionend', updateName);
   $('load-example').addEventListener('click', () => {
     $('source-text').value = 'TWQRP://個人轉帳/158/02/V1?D5=808&D6=0000001234567890&D97=20260101000000&D98=EXAMPLE&D99=EXAMPLE';
     clearResult(); status('已帶入示意範例，按「產生 QR Code」試用。');
