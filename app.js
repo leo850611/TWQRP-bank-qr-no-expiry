@@ -33,15 +33,17 @@
       qr.make();
       const count = qr.getModuleCount();
       const quiet = 4;
-      const scale = Math.max(8, Math.ceil(1024 / (count + quiet * 2)));
+      const size = 600;
+      const scale = Math.floor(size / (count + quiet * 2));
+      const offset = Math.floor((size - count * scale) / 2);
       const canvas = $('qr-canvas');
-      canvas.width = canvas.height = (count + quiet * 2) * scale;
+      canvas.width = canvas.height = size;
       const ctx = canvas.getContext('2d');
       ctx.fillStyle = '#ffffff';
       ctx.fillRect(0, 0, canvas.width, canvas.height);
       ctx.fillStyle = '#000000';
       for (let y = 0; y < count; y++) for (let x = 0; x < count; x++) {
-        if (qr.isDark(y, x)) ctx.fillRect((x + quiet) * scale, (y + quiet) * scale, scale, scale);
+        if (qr.isDark(y, x)) ctx.fillRect(offset + x * scale, offset + y * scale, scale, scale);
       }
       result = next;
       $('download').href = canvas.toDataURL('image/png');
