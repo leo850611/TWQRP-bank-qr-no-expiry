@@ -6,7 +6,7 @@
   <meta name="description" content="在瀏覽器內讀取個人轉帳 QR Code，只保留銀行代碼 D5 與帳號 D6，重新產生 QR Code。支援圖片、相機與文字輸入。">
   <meta name="theme-color" content="#147566">
   <title>轉帳 QR Code 精簡工具</title>
-  <link rel="icon" href="favicon.svg" type="image/svg+xml">
+  <link rel="icon" href="assets/qr-scan.png" type="image/png">
   <link rel="stylesheet" href="styles.css">
   <script src="vendor/jsQR.js" defer></script>
   <script src="vendor/qrcode.js" defer></script>
@@ -16,13 +16,13 @@
 </head>
 <body>
   <header class="site-header wrap">
-    <a class="brand" href="./" aria-label="轉帳 QR 首頁"><span class="brand-mark" aria-hidden="true">▦</span> 轉帳 QR<span class="brand-light"> / 簡單一點</span></a>
+    <a class="brand" href="./" aria-label="轉帳 QR 首頁"><img class="brand-mark" src="assets/qr-scan.png" width="35" height="35" alt=""> 轉帳 QR<span class="brand-light"> / 簡單一點</span></a>
     <span class="local-badge"><span aria-hidden="true">●</span> 資料僅在本機處理</span>
   </header>
   <main class="wrap">
     <section class="intro">
       <span class="eyebrow">TWQRP 個人轉帳工具</span>
-      <h1>留下帳號，<span>讓轉帳更簡單。</span></h1>
+      <h1 class="hero-title"><img class="intro-icon" src="assets/bank.png" width="56" height="56" alt=""><span class="headline-text">留下帳號，<span>讓轉帳更簡單。</span></span></h1>
       <p>匯入你的轉帳 QR Code，只保留銀行代碼與帳號，<br class="desktop-break">重新產生一張乾淨、方便儲存的 QR Code。</p>
       <div class="steps" aria-label="使用步驟"><span><b>1</b> 匯入 QR Code</span><i aria-hidden="true">→</i><span><b>2</b> 下載新圖片</span></div>
     </section>
