@@ -1,0 +1,85 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="在瀏覽器內讀取個人轉帳 QR Code，只保留銀行代碼 D5 與帳號 D6，重新產生 QR Code。支援圖片、相機與文字輸入。">
+  <meta name="theme-color" content="#147566">
+  <title>轉帳 QR Code 精簡工具</title>
+  <link rel="icon" href="favicon.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="styles.css">
+  <script src="vendor/jsQR.js" defer></script>
+  <script src="vendor/qrcode.js" defer></script>
+  <script src="vendor/qrcode_UTF8.js" defer></script>
+  <script src="transfer.js" defer></script>
+  <script src="app.js" defer></script>
+</head>
+<body>
+  <header class="site-header wrap">
+    <a class="brand" href="./" aria-label="轉帳 QR 首頁"><span class="brand-mark" aria-hidden="true">▦</span> 轉帳 QR<span class="brand-light"> / 簡單一點</span></a>
+    <span class="local-badge"><span aria-hidden="true">●</span> 資料僅在本機處理</span>
+  </header>
+  <main class="wrap">
+    <section class="intro">
+      <span class="eyebrow">TWQRP 個人轉帳工具</span>
+      <h1>留下帳號，<span>讓轉帳更簡單。</span></h1>
+      <p>匯入你的轉帳 QR Code，只保留銀行代碼與帳號，<br class="desktop-break">重新產生一張乾淨、方便儲存的 QR Code。</p>
+      <div class="steps" aria-label="使用步驟"><span><b>1</b> 匯入 QR Code</span><i aria-hidden="true">→</i><span><b>2</b> 保留 D5、D6</span><i aria-hidden="true">→</i><span><b>3</b> 下載新圖片</span></div>
+    </section>
+
+    <div class="workspace">
+      <section class="panel input-panel" aria-labelledby="input-heading">
+        <div class="panel-heading"><div><span class="section-number">01 / 匯入</span><h2 id="input-heading">原始 QR Code</h2></div><button class="text-button" id="reset" type="button">重新開始 ↻</button></div>
+        <div class="tabs" role="tablist" aria-label="輸入方式">
+          <button id="tab-image" role="tab" aria-selected="true" aria-controls="panel-image" tabindex="0" data-mode="image"><span aria-hidden="true">▧</span> 選擇圖片</button>
+          <button id="tab-camera" role="tab" aria-selected="false" aria-controls="panel-camera" tabindex="-1" data-mode="camera"><span aria-hidden="true">◎</span> 相機掃描</button>
+          <button id="tab-text" role="tab" aria-selected="false" aria-controls="panel-text" tabindex="-1" data-mode="text"><span aria-hidden="true">T</span> 貼上文字</button>
+        </div>
+
+        <div id="panel-image" role="tabpanel" aria-labelledby="tab-image">
+          <input class="sr-only" id="image-input" type="file" accept="image/*" aria-label="選擇 QR Code 圖片">
+          <button class="dropzone" id="choose-image" type="button">
+            <span class="upload-symbol" aria-hidden="true"><svg viewBox="0 0 32 32" fill="none" stroke="currentColor" stroke-width="1.6"><rect x="5" y="5" width="22" height="22" rx="4"/><circle cx="12" cy="12" r="2"/><path d="m6 23 8-8 5 5 3-3 5 5"/></svg></span>
+            <strong>選擇或拖曳 QR Code 圖片</strong>
+            <span>支援 JPG、PNG、WebP 等瀏覽器可讀取格式</span>
+            <span class="upload-cta">選擇圖片 <span aria-hidden="true">↗</span></span>
+          </button>
+          <div class="image-preview" id="image-preview" hidden><img id="source-image" alt="匯入的原始 QR Code"><span id="file-name"></span></div>
+          <p class="input-hint">小提示：可以直接選擇銀行 App 的 QR Code 截圖。</p>
+        </div>
+
+        <div id="panel-camera" role="tabpanel" aria-labelledby="tab-camera" hidden>
+          <div class="camera-frame"><video id="camera-video" playsinline muted aria-label="相機即時預覽"></video><div id="camera-placeholder"><span aria-hidden="true">◎</span><p>將 QR Code 對準相機</p></div><div class="scan-guide" id="scan-guide" hidden></div></div>
+          <div class="camera-actions"><button class="primary-button" id="start-camera" type="button">開啟相機</button><button class="secondary-button" id="stop-camera" type="button" hidden>關閉相機</button></div>
+          <p class="input-hint">需使用 HTTPS 或 localhost，並允許瀏覽器存取相機。</p>
+        </div>
+
+        <form id="panel-text" role="tabpanel" aria-labelledby="tab-text" hidden>
+          <label for="source-text">TWQRP 轉帳文字</label>
+          <textarea id="source-text" rows="6" spellcheck="false" autocomplete="off" autocapitalize="off" placeholder="TWQRP://個人轉帳/158/02/V1?D5=…&D6=…"></textarea>
+          <div class="text-actions"><button class="text-button" id="load-example" type="button">帶入範例</button><button class="primary-button" type="submit">產生 QR Code <span aria-hidden="true">→</span></button></div>
+        </form>
+        <p class="status" id="status" role="status" aria-live="polite">等待匯入，選擇一種方式開始。</p>
+        <div class="privacy-note"><svg viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.6"><rect x="5" y="10" width="14" height="11" rx="3"/><path d="M8 10V7a4 4 0 0 1 8 0v3m-4 5v2"/></svg><span>圖片與帳號不會上傳，也不會儲存在網站。</span></div>
+      </section>
+
+      <section class="panel output-panel" aria-labelledby="output-heading">
+        <div class="panel-heading"><div><span class="section-number">02 / 產生</span><h2 id="output-heading">精簡後的 QR Code</h2></div><span class="pill">只保留 D5 · D6</span></div>
+        <div id="empty-output" class="empty-output"><div class="qr-placeholder" aria-hidden="true"><svg viewBox="0 0 100 100" fill="none" stroke="currentColor" stroke-width="6"><rect x="8" y="8" width="28" height="28" rx="3"/><rect x="64" y="8" width="28" height="28" rx="3"/><rect x="8" y="64" width="28" height="28" rx="3"/><path d="M50 8v15m0 14v15H8m42 12v28m14-42h28M64 64h14v14h14v14H64V78"/></svg></div><h3>你的新 QR Code 會出現在這裡</h3><p>匯入後自動移除其他參數</p><span class="waiting-tag">等待匯入</span></div>
+        <div id="result" hidden>
+          <div class="qr-paper"><canvas id="qr-canvas" role="img" aria-label="精簡後的轉帳 QR Code"></canvas></div>
+          <div class="account-details"><div><span>銀行代碼 <small>D5</small></span><strong id="bank-code"></strong></div><div><span>轉入帳號 <small>D6</small></span><strong id="account-number"></strong></div></div>
+          <label class="result-label" for="result-text">精簡後的內容</label><textarea id="result-text" readonly rows="3" spellcheck="false"></textarea>
+          <div class="result-actions"><a id="download" class="primary-button" download="transfer-qr.png">↓ 下載 PNG</a><button id="copy" class="secondary-button" type="button">複製文字</button></div>
+          <p id="result-summary" class="result-summary"></p>
+        </div>
+        <p class="bank-note">轉帳前請核對銀行與帳號。實際支援情況依各銀行 App 為準。</p>
+      </section>
+    </div>
+
+    <section class="explainer" aria-label="轉換說明"><span class="explainer-icon" aria-hidden="true">↳</span><div><h2>少一點參數，一樣清楚。</h2><p>保留原始 TWQRP 路徑、銀行代碼 D5 與帳號 D6，移除 D97、D98、D99 及其他參數。</p></div><code>D6=帳號<span>&amp;</span>D5=銀行代碼</code></section>
+  </main>
+  <footer class="wrap"><span>轉帳 QR / 簡單一點</span><span>純靜態網頁 · 不上傳 · 不留存</span></footer>
+  <noscript><p class="noscript">請啟用 JavaScript，才能在瀏覽器內讀取及產生 QR Code。</p></noscript>
+</body>
+</html>
