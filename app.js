@@ -53,6 +53,16 @@
       $('empty-output').hidden = true;
       $('result').hidden = false;
       status('轉換完成，請核對銀行代碼與帳號後下載。', 'success');
+      if (window.matchMedia('(max-width: 680px)').matches) {
+        if (document.activeElement === $('source-text')) $('source-text').blur();
+        requestAnimationFrame(() => {
+          if (result !== next) return;
+          $('output-panel').scrollIntoView({
+            behavior: window.matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth',
+            block: 'start',
+          });
+        });
+      }
       return true;
     } catch (error) { status(error.message || '無法轉換此內容，請確認格式。', 'error'); return false; }
   }
