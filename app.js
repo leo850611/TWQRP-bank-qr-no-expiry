@@ -33,13 +33,14 @@
       if (resultQr.isDark(y, x)) ctx.fillRect(offsetX + x * scale, offsetY + y * scale, scale, scale);
     }
     if (name) {
-      let fontSize = 32;
+      let fontSize = 40;
       const setFont = () => { ctx.font = `600 ${fontSize}px "Microsoft JhengHei", "PingFang TC", sans-serif`; };
       setFont();
       while (ctx.measureText(name).width > size - 72 && fontSize > 12) { fontSize--; setFont(); }
       ctx.textAlign = 'center';
       ctx.textBaseline = 'middle';
-      ctx.fillText(name, size / 2, 558, size - 72);
+      const nameY = offsetY + count * scale + 4 * scale + fontSize / 2 + 4;
+      ctx.fillText(name, size / 2, nameY, size - 72);
     }
     canvas.setAttribute('aria-label', name ? `精簡後的轉帳 QR Code，姓名：${name}` : '精簡後的轉帳 QR Code');
     $('download').href = canvas.toDataURL('image/png');
