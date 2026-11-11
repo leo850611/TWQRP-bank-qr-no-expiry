@@ -64,7 +64,6 @@
     $('empty-output').hidden = false;
     $('result').hidden = true;
     $('qr-canvas').getContext('2d').clearRect(0, 0, $('qr-canvas').width, $('qr-canvas').height);
-    $('result-text').value = '';
     $('download').removeAttribute('href');
     $('bank-code').textContent = '';
     $('account-number').textContent = '';
@@ -83,11 +82,11 @@
       renderResult();
       $('bank-code').textContent = result.bank;
       $('account-number').textContent = result.account;
-      $('result-text').value = result.text;
       $('result-summary').textContent = result.removed ? `已移除 ${result.removed} 個其他參數，保留 D6 與 D5。` : '內容已精簡，僅保留 D6 與 D5。';
       $('empty-output').hidden = true;
       $('result').hidden = false;
       status('轉換完成，請核對銀行代碼與帳號後下載。', 'success');
+      console.log('精簡後的內容：', result.text);
       if (window.matchMedia('(max-width: 680px)').matches) {
         if (document.activeElement === $('source-text')) $('source-text').blur();
         requestAnimationFrame(() => {
@@ -259,7 +258,21 @@
   });
   $('copy').addEventListener('click', async () => {
     if (!result) return;
-    try { await navigator.clipboard.writeText(result.text); status('已複製精簡後的轉帳文字。', 'success'); }
-    catch { $('result-text').focus(); $('result-text').select(); status('瀏覽器無法自動複製，已選取文字，請長按複製或按 Ctrl / ⌘ + C。'); }
+    const text = result.text;
+    try { await navigator.clipboard.writeText(text); status('已複製精簡後的轉帳文字。', 'success'); }
+    catch {
+      const temporary = document.createElement('textarea');
+      temporary.value = text;
+      temporary.readOnly = true;
+      temporary.className = 'sr-only';
+      document.body.appendChild(temporary);
+      try {
+        temporary.focus();
+        temporary.select();
+        if (!document.execCommand('copy')) throw new Error('Copy failed');
+        status('已複製精簡後的轉帳文字。', 'success');
+      } catch { status('複製失敗，請透過 HTTPS 開啟網頁後再試。', 'error'); }
+      finally { temporary.remove(); $('copy').focus({ preventScroll: true }); }
+    }
   });
 })();
