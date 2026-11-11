@@ -42,7 +42,7 @@
       const nameY = offsetY + count * scale + 4 * scale + fontSize / 2 + 4;
       ctx.fillText(name, size / 2, nameY, size - 72);
     }
-    canvas.setAttribute('aria-label', name ? `精簡後的轉帳 QR Code，姓名：${name}` : '精簡後的轉帳 QR Code');
+    canvas.setAttribute('aria-label', name ? `不含期限參數的轉帳 QR Code，姓名：${name}` : '不含期限參數的轉帳 QR Code');
     $('download').href = canvas.toDataURL('image/png');
     $('download').download = `transfer-qr-${result.bank}-${result.account.slice(-4)}.png`;
   }
@@ -82,11 +82,11 @@
       renderResult();
       $('bank-code').textContent = result.bank;
       $('account-number').textContent = result.account;
-      $('result-summary').textContent = result.removed ? `已移除 ${result.removed} 個其他參數，保留 D6 與 D5。` : '內容已精簡，僅保留 D6 與 D5。';
+      $('result-summary').textContent = '此 QR Code 僅含銀行與帳號，不含期限參數，可下載保存。';
       $('empty-output').hidden = true;
       $('result').hidden = false;
       status('轉換完成，請核對銀行代碼與帳號後下載。', 'success');
-      console.log('精簡後的內容：', result.text);
+      console.log('轉換後的內容：', result.text);
       if (window.matchMedia('(max-width: 680px)').matches) {
         if (document.activeElement === $('source-text')) $('source-text').blur();
         requestAnimationFrame(() => {
@@ -259,7 +259,7 @@
   $('copy').addEventListener('click', async () => {
     if (!result) return;
     const text = result.text;
-    try { await navigator.clipboard.writeText(text); status('已複製精簡後的轉帳文字。', 'success'); }
+    try { await navigator.clipboard.writeText(text); status('已複製轉換後的轉帳文字。', 'success'); }
     catch {
       const temporary = document.createElement('textarea');
       temporary.value = text;
@@ -270,7 +270,7 @@
         temporary.focus();
         temporary.select();
         if (!document.execCommand('copy')) throw new Error('Copy failed');
-        status('已複製精簡後的轉帳文字。', 'success');
+        status('已複製轉換後的轉帳文字。', 'success');
       } catch { status('複製失敗，請透過 HTTPS 開啟網頁後再試。', 'error'); }
       finally { temporary.remove(); $('copy').focus({ preventScroll: true }); }
     }

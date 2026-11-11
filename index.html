@@ -3,9 +3,9 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <meta name="description" content="在瀏覽器內讀取個人轉帳 QR Code，只保留銀行代碼 D5 與帳號 D6，重新產生 QR Code。支援圖片、相機與文字輸入。">
+  <meta name="description" content="將個人轉帳 QR Code 轉成不含期限參數的版本，下載保存、重複使用。支援圖片、相機與文字輸入，資料僅在瀏覽器內處理。">
   <meta name="theme-color" content="#147566">
-  <title>轉帳 QR Code 精簡工具</title>
+  <title>轉帳 QR Code 不過期工具</title>
   <link rel="icon" href="assets/qr-scan.png" type="image/png">
   <link rel="stylesheet" href="styles.css">
   <script src="vendor/jsQR.js" defer></script>
@@ -16,14 +16,14 @@
 </head>
 <body>
   <header class="site-header wrap">
-    <a class="brand" href="./" aria-label="轉帳 QR 首頁"><img class="brand-mark" src="assets/qr-scan.png" width="35" height="35" alt=""> 轉帳 QR<span class="brand-light"> / 簡單一點</span></a>
+    <a class="brand" href="./" aria-label="轉帳 QR 首頁"><img class="brand-mark" src="assets/qr-scan.png" width="35" height="35" alt=""> 轉帳 QR<span class="brand-light"> / 不怕過期</span></a>
     <span class="local-badge"><span aria-hidden="true">●</span> 資料僅在本機處理</span>
   </header>
   <main class="wrap">
     <section class="intro">
-      <span class="eyebrow">TWQRP 個人轉帳工具</span>
-      <h1 class="hero-title"><img class="intro-icon" src="assets/bank.png" width="56" height="56" alt=""><span class="headline-text">留下帳號，<span>讓轉帳更簡單。</span></span></h1>
-      <p>匯入你的轉帳 QR Code，只保留銀行代碼與帳號，<br class="desktop-break">重新產生一張乾淨、方便儲存的 QR Code。</p>
+      <span class="eyebrow">TWQRP 個人轉帳 · 不含期限參數</span>
+      <h1 class="hero-title"><img class="intro-icon" src="assets/bank.png" width="56" height="56" alt=""><span class="headline-text">轉帳 QR Code，<span>不再擔心過期。</span></span></h1>
+      <p>將銀行 App 的轉帳 QR Code 轉成不含期限參數的版本，<br class="desktop-break">下載保存，下次轉帳繼續用。</p>
       <div class="steps" aria-label="使用步驟"><span><b>1</b> 匯入 QR Code</span><i aria-hidden="true">→</i><span><b>2</b> 下載新圖片</span></div>
     </section>
 
@@ -64,10 +64,10 @@
       </section>
 
       <section id="output-panel" class="panel output-panel" aria-labelledby="output-heading">
-        <div class="panel-heading"><div><span class="section-number">02 / 產生</span><h2 id="output-heading">精簡後的 QR Code</h2></div><span class="pill">只保留 D5 · D6</span></div>
-        <div id="empty-output" class="empty-output"><div class="qr-placeholder" aria-hidden="true"><svg viewBox="0 0 100 100" fill="none" stroke="currentColor" stroke-width="6"><rect x="8" y="8" width="28" height="28" rx="3"/><rect x="64" y="8" width="28" height="28" rx="3"/><rect x="8" y="64" width="28" height="28" rx="3"/><path d="M50 8v15m0 14v15H8m42 12v28m14-42h28M64 64h14v14h14v14H64V78"/></svg></div><h3>你的新 QR Code 會出現在這裡</h3><p>匯入後自動移除其他參數</p><span class="waiting-tag">等待匯入</span></div>
+        <div class="panel-heading"><div><span class="section-number">02 / 產生</span><h2 id="output-heading">重新產生的 QR Code</h2></div><span class="pill">不過期</span></div>
+        <div id="empty-output" class="empty-output"><div class="qr-placeholder" aria-hidden="true"><svg viewBox="0 0 100 100" fill="none" stroke="currentColor" stroke-width="6"><rect x="8" y="8" width="28" height="28" rx="3"/><rect x="64" y="8" width="28" height="28" rx="3"/><rect x="8" y="64" width="28" height="28" rx="3"/><path d="M50 8v15m0 14v15H8m42 12v28m14-42h28M64 64h14v14h14v14H64V78"/></svg></div><h3>你的新 QR Code 會出現在這裡</h3><p>匯入後，產生不含期限參數的版本</p><span class="waiting-tag">等待匯入</span></div>
         <div id="result" hidden>
-          <div class="qr-paper"><canvas id="qr-canvas" role="img" aria-label="精簡後的轉帳 QR Code"></canvas></div>
+          <div class="qr-paper"><canvas id="qr-canvas" role="img" aria-label="不含期限參數的轉帳 QR Code"></canvas></div>
           <div class="name-field">
             <label for="personal-name">個人姓名 <span>（選填）</span></label>
             <input id="personal-name" type="text" autocomplete="name" placeholder="輸入姓名，顯示在 QR Code 下方" aria-describedby="name-hint name-count">
@@ -81,9 +81,9 @@
       </section>
     </div>
 
-    <section class="explainer" aria-label="轉換說明"><span class="explainer-icon" aria-hidden="true">↳</span><div><h2>少一點參數，一樣清楚。</h2><p>保留原始 TWQRP 路徑、銀行代碼 D5 與帳號 D6，移除 D97、D98、D99 及其他參數。</p></div><code>D6=帳號<span>&amp;</span>D5=銀行代碼</code></section>
+    <section class="explainer" aria-label="轉換說明"><span class="explainer-icon" aria-hidden="true">↳</span><div><h2>轉一次，留著以後用。</h2><p>重新產生只含銀行代碼與帳號的 QR Code，不帶入原始期限等額外參數，方便保存與重複使用。</p></div><code>下載保存 · 重複使用</code></section>
   </main>
-  <footer class="wrap"><span>轉帳 QR / 簡單一點</span><span>純靜態網頁 · 不上傳 · 不留存</span></footer>
+  <footer class="wrap"><span>轉帳 QR / 不怕過期</span><span>純靜態網頁 · 不上傳 · 不留存</span></footer>
   <noscript><p class="noscript">請啟用 JavaScript，才能在瀏覽器內讀取及產生 QR Code。</p></noscript>
 </body>
 </html>
