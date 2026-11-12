@@ -2,7 +2,7 @@
 
 網站連結：[https://bankqr.leosheu.com](https://bankqr.leosheu.com)
 
-將銀行 App 的個人轉帳 QR Code 轉成不含期限參數的版本，方便下載保存與重複使用。純 HTML、CSS、JavaScript 靜態網頁，支援選擇／拖曳圖片、相機掃描與貼上 TWQRP 文字；轉換時只保留 D6（帳號）與 D5（銀行代碼）。
+專供台灣 TWQRP 個人轉帳 QR Code 使用，將銀行 App 的轉帳 QR Code 轉成不含期限參數的版本，方便下載保存與重複使用。純 HTML、CSS、JavaScript 靜態網頁，支援選擇／拖曳圖片、相機掃描與貼上 TWQRP 文字；轉換時只保留 D6（帳號）與 D5（銀行代碼）。
 
 ```text
 TWQRP://個人轉帳/158/02/V1?D5=808&D6=0000001234567890&D97=20260101000000&D98=EXAMPLE&D99=EXAMPLE
